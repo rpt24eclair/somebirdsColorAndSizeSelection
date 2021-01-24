@@ -36,4 +36,19 @@ describe('API Endpoints', () => {
     });
   });
 
+  describe('POST request to /shoes should create a shoe with the correct data', () => {
+    it('Creates a shoe with colors and sizes', () => {
+      shoe.create({
+        "name": "Test Shoe",
+        "model": 101,
+        "size" : [4, 5, 6],
+        "color": [1, 2, 3],
+        "quantity": [{"size": 4, "color": 1, "quantity": 10}, {"size": 5, "color": 2, "quantity": 10}, {"size": 6, "color": 3, "quantity": 10}]
+    })
+      return shoes.get(105, 2)
+      .then(quantityData => {
+        expect(Array.isArray(quantityData)).to.equal(true);
+      })
+    });
+  });
 });

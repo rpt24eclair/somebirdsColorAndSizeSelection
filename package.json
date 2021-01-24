@@ -12,7 +12,7 @@
     "test:db-install": "brew install mysql@5.7 && brew services start mysql@5.7",
     "test:db-permission-setup": "brew services start mysql@5.7 && /usr/local/opt/mysql@5.7/bin/mysql -u root < ./db/createStudentAccount.sql",
     "test:db-seed": " /usr/local/opt/mysql@5.7/bin/mysql -u student < ./db/createDB.sql && node ./db/create_tables.js && node ./db/generate_data.js",
-    "lint" : "./node_modules/.bin/eslint"
+    "lint": "./node_modules/.bin/eslint"
   },
   "repository": {
     "type": "git",
