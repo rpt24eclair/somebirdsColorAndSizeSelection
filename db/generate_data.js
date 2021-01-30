@@ -1,4 +1,5 @@
 const { Shoe, Color, Size, Quantity, Shoecolor, Shoesize } = require('./index.js');
+const shoes = require('../model');
 
 const gender = ['Men\'s', 'Women\'s', 'Gender Neutral', 'Child\'s', 'Girl\'s', 'Boy\'s', 'Toddler\'s', 'Toddler Girl\'s', 'Toddler Boy\'s', 'Baby\'s', 'Baby Girl\'s', 'Baby Boy\'s', 'Infant\'s', 'Infant Girl\'s', 'Infant Boy\'s', 'Teen\'s', 'Teen Girl\'s', 'Teen Boy\'s', 'Senior\'s', 'Junior\'s'];
 const material = ['Wool', 'Cotton', 'Polyester', 'Nylon', 'Leather', 'Silk', 'Rubber', 'Fiber', 'Synthetic', 'Polyurethane', 'Artificial', 'Adhesive', 'Felt', 'Kevlar', 'Cowhide', 'Velvet', 'Microfiber', 'Nanotech', 'Invisible', 'Indestructible'];
@@ -62,46 +63,6 @@ const classicColorData = [
     sole_color: 'Deep Pink',
     shoe_hex: '#FF69B4',
     sole_hex: '#FF1493',
-    limited: false,
-  },
-  {
-    name: 'Blue Burst',
-    shoe_color: 'Deep Sky Blue',
-    sole_color: 'Navy',
-    shoe_hex: '#00BFFF',
-    sole_hex: '#000080',
-    limited: false,
-  },
-  {
-    name: 'Red Waters',
-    shoe_color: 'Crimson',
-    sole_color: 'Aqua',
-    shoe_hex: '#DC143C',
-    sole_hex: '#00FFFF',
-    limited: false,
-  },
-  {
-    name: 'White Washed',
-    shoe_color: 'Alice Blue',
-    sole_color: 'Ivory',
-    shoe_hex: '#F0F8FF',
-    sole_hex: '#FFFFF0',
-    limited: false,
-  },
-  {
-    name: 'Cement',
-    shoe_color: 'Light Gray',
-    sole_color: 'Dark Gray',
-    shoe_hex: '#D3D3D3',
-    sole_hex: '#A9A9A9',
-    limited: false,
-  },
-  {
-    name: 'Woodworks',
-    shoe_color: 'Burly Wood',
-    sole_color: 'Saddle Brown',
-    shoe_hex: '#DEB887',
-    sole_hex: '#8B4513',
     limited: false,
   },
 ];
@@ -187,46 +148,6 @@ const limitedColorData = [
     sole_hex: '#A9A9A9',
     limited: true,
   },
-  {
-    name: 'Lavender Dream',
-    shoe_color: 'Lavender',
-    sole_color: 'Plum',
-    shoe_hex: '#E6E6FA',
-    sole_hex: '#DDA0DD',
-    limited: true,
-  },
-  {
-    name: 'Orange Crush',
-    shoe_color: 'Orange',
-    sole_color: 'White',
-    shoe_hex: '#FFA500',
-    sole_hex: '#FFFFFF',
-    limited: true,
-  },
-  {
-    name: 'Quasimodo',
-    shoe_color: 'Gold',
-    sole_color: 'Dark Orchid',
-    shoe_hex: '#FFD700',
-    sole_hex: '#9932CC',
-    limited: true,
-  },
-  {
-    name: 'Spriest',
-    shoe_color: 'Dark Magenta',
-    sole_color: 'Indigo',
-    shoe_hex: '#8B008B',
-    sole_hex: '#4B0082',
-    limited: true,
-  },
-  {
-    name: 'Manzanilla',
-    shoe_color: 'Olive',
-    sole_color: 'Fire Brick',
-    shoe_hex: '#808000',
-    sole_hex: '#B22222',
-    limited: true,
-  },
 ];
 
 const colorBulkData = [...classicColorData, ...limitedColorData];
@@ -235,14 +156,13 @@ const colorSeed = async () => {
   await Color.bulkCreate(colorBulkData);
 };
 
-const shoeSize = ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '12.5', '13', '13.5', '14'];
+const shoeSize = ['5', '6', '7', '8', '9', '10', '11', '12', '13'];
 const sizeBulkData = shoeSize.map((size) => ({ size: size }));
 const sizeSeed = async () => {
   await Size.bulkCreate(sizeBulkData);
 };
 
 const SHOE_MULTIPLIER = 8000;
-const NUMBER_OF_COLORS = 25;
 
 const randomNumberGenerator = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -253,10 +173,10 @@ let classicCountMax = SHOE_MULTIPLIER;
 const shoeColorsClassic = async () => {
   const classicColorBulkData = [];
   for (let shoeID = classicCountMin; shoeID <= classicCountMax; shoeID += 1) {
-    const classicCount = randomNumberGenerator(2, 6);
+    const classicCount = randomNumberGenerator(2, 5);
     const classicColorIndexes = [];
     for (let i = 0; i < classicCount; i += 1) {
-      const choice = randomNumberGenerator(1, 10);
+      const choice = randomNumberGenerator(1, 5);
       if (!classicColorIndexes.includes(choice)) {
         classicColorIndexes.push(choice);
       } else {
@@ -280,7 +200,7 @@ const shoeColorsLimited = async () => {
     const limitedCount = randomNumberGenerator(1, 4);
     const limitedColorIndexes = [];
     for (let i = 0; i < limitedCount; i += 1) {
-      const choice = randomNumberGenerator(11, 25);
+      const choice = randomNumberGenerator(6, 15);
       if (!limitedColorIndexes.includes(choice)) {
         limitedColorIndexes.push(choice);
       } else {
@@ -296,8 +216,8 @@ const shoeColorsLimited = async () => {
   limitedCountMax += SHOE_MULTIPLIER;
 };
 
-const mensSizeIDs = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-const womensSizeIDs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+const mensSizeIDs = [4, 5, 6, 7, 8, 9];
+const womensSizeIDs = [1, 2, 3, 4, 5, 6];
 let mensSizeCountMin = 1;
 let mensSizeCountMax = SHOE_MULTIPLIER;
 const mensSizeData = async () => {
@@ -331,16 +251,17 @@ let mensQuantCountMax = 1000;
 const menQuantData = async () => {
   const menQuantityBulkData = [];
   for (let shoeID = mensQuantCountMin; shoeID <= mensQuantCountMax; shoeID += 2) {
-    for (let colorID = 1; colorID <= NUMBER_OF_COLORS; colorID += 1) {
+  const colors = await shoes.get.colors(shoeID);
+    colors.forEach((color) => {
       mensSizeIDs.forEach((sizeID) => {
         menQuantityBulkData.push({
           shoe_id: shoeID,
-          color_id: colorID,
+          color_id: color.id,
           size_id: sizeID,
           quantity: randomNumberGenerator(0, 9),
         });
       });
-    }
+    });
   }
   await Quantity.bulkCreate(menQuantityBulkData);
   mensQuantCountMin += 1000;
@@ -352,16 +273,17 @@ let womensQuantCountMax = 1000;
 const womenQuantData = async () => {
   const womenQuantityBulkData = [];
   for (let shoeID = womensQuantCountMin; shoeID <= womensQuantCountMax; shoeID += 2) {
-    for (let colorID = 1; colorID <= NUMBER_OF_COLORS; colorID += 1) {
+    const colors = await shoes.get.colors(shoeID);
+    colors.forEach((color) => {
       womensSizeIDs.forEach((sizeID) => {
         womenQuantityBulkData.push({
           shoe_id: shoeID,
-          color_id: colorID,
+          color_id: color.id,
           size_id: sizeID,
           quantity: randomNumberGenerator(0, 9),
         });
       });
-    }
+    });
   }
   await Quantity.bulkCreate(womenQuantityBulkData);
   womensQuantCountMin += 1000;
@@ -370,22 +292,13 @@ const womenQuantData = async () => {
 
 const seed = async () => {
   await repeat(shoeData, 125);
-  console.log('shoes');
   await colorSeed();
-  console.log('color');
   await sizeSeed();
-  console.log('size');
   await repeat(shoeColorsClassic, 125);
-  console.log('classic');
   await repeat(shoeColorsLimited, 125);
-  console.log('limited');
   await repeat(mensSizeData, 125);
-  console.log('men');
   await repeat(womensSizeData, 125);
-  console.log('women');
   await repeat(menQuantData, 1000);
-  console.log('men');
   await repeat(womenQuantData, 1000);
-  console.log('women');
 };
 seed();
