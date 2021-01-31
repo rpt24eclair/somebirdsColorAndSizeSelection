@@ -1,5 +1,4 @@
 const { Shoe, Color, Size, Quantity, Shoecolor, Shoesize } = require('./index.js');
-const shoes = require('../model');
 
 const gender = ['Men\'s', 'Women\'s', 'Gender Neutral', 'Child\'s', 'Girl\'s', 'Boy\'s', 'Toddler\'s', 'Toddler Girl\'s', 'Toddler Boy\'s', 'Baby\'s', 'Baby Girl\'s', 'Baby Boy\'s', 'Infant\'s', 'Infant Girl\'s', 'Infant Boy\'s', 'Teen\'s', 'Teen Girl\'s', 'Teen Boy\'s', 'Senior\'s', 'Junior\'s'];
 const material = ['Wool', 'Cotton', 'Polyester', 'Nylon', 'Leather', 'Silk', 'Rubber', 'Fiber', 'Synthetic', 'Polyurethane', 'Artificial', 'Adhesive', 'Felt', 'Kevlar', 'Cowhide', 'Velvet', 'Microfiber', 'Nanotech', 'Invisible', 'Indestructible'];
@@ -151,7 +150,6 @@ const limitedColorData = [
 ];
 
 const colorBulkData = [...classicColorData, ...limitedColorData];
-
 const colorSeed = async () => {
   await Color.bulkCreate(colorBulkData);
 };
@@ -166,54 +164,6 @@ const SHOE_MULTIPLIER = 8000;
 
 const randomNumberGenerator = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
-let classicCountMin = 1;
-let classicCountMax = SHOE_MULTIPLIER;
-const shoeColorsClassic = async () => {
-  const classicColorBulkData = [];
-  for (let shoeID = classicCountMin; shoeID <= classicCountMax; shoeID += 1) {
-    const classicCount = randomNumberGenerator(2, 5);
-    const classicColorIndexes = [];
-    for (let i = 0; i < classicCount; i += 1) {
-      const choice = randomNumberGenerator(1, 5);
-      if (!classicColorIndexes.includes(choice)) {
-        classicColorIndexes.push(choice);
-      } else {
-        i -= 1;
-      }
-    }
-    classicColorIndexes.forEach((x) => {
-      classicColorBulkData.push({ shoe_id: shoeID, color_id: x });
-    });
-  }
-  await Shoecolor.bulkCreate(classicColorBulkData);
-  classicCountMin += SHOE_MULTIPLIER;
-  classicCountMax += SHOE_MULTIPLIER;
-};
-
-let limitedCountMin = 1;
-let limitedCountMax = SHOE_MULTIPLIER;
-const shoeColorsLimited = async () => {
-  const limitedColorBulkData = [];
-  for (let shoeID = limitedCountMin; shoeID <= limitedCountMax; shoeID += 1) {
-    const limitedCount = randomNumberGenerator(1, 4);
-    const limitedColorIndexes = [];
-    for (let i = 0; i < limitedCount; i += 1) {
-      const choice = randomNumberGenerator(6, 15);
-      if (!limitedColorIndexes.includes(choice)) {
-        limitedColorIndexes.push(choice);
-      } else {
-        i -= 1;
-      }
-    }
-    limitedColorIndexes.forEach((x) => {
-      limitedColorBulkData.push({ shoe_id: shoeID, color_id: x });
-    });
-  }
-  await Shoecolor.bulkCreate(limitedColorBulkData);
-  limitedCountMin += SHOE_MULTIPLIER;
-  limitedCountMax += SHOE_MULTIPLIER;
 };
 
 const mensSizeIDs = [4, 5, 6, 7, 8, 9];
@@ -250,13 +200,38 @@ let mensQuantCountMin = 1;
 let mensQuantCountMax = 1000;
 const menQuantData = async () => {
   const menQuantityBulkData = [];
+  const classicColorBulkData = [];
+  const limitedColorBulkData = [];
   for (let shoeID = mensQuantCountMin; shoeID <= mensQuantCountMax; shoeID += 2) {
-  const colors = await shoes.get.colors(shoeID);
-    colors.forEach((color) => {
+    const classicCount = randomNumberGenerator(2, 5);
+    const classicColorIndexes = [];
+    for (let i = 0; i < classicCount; i += 1) {
+      const choice = randomNumberGenerator(1, 5);
+      if (!classicColorIndexes.includes(choice)) {
+        classicColorIndexes.push(choice);
+      } else {
+        i -= 1;
+      }
+    }
+    const limitedCount = randomNumberGenerator(1, 4);
+    const limitedColorIndexes = [];
+    for (let i = 0; i < limitedCount; i += 1) {
+      const choice = randomNumberGenerator(6, 15);
+      if (!limitedColorIndexes.includes(choice)) {
+        limitedColorIndexes.push(choice);
+      } else {
+        i -= 1;
+      }
+    }
+    limitedColorIndexes.forEach((x) => {
+      limitedColorBulkData.push({ shoe_id: shoeID, color_id: x });
+    });
+    const allColors = [...limitedColorIndexes, ...classicColorIndexes];
+    allColors.forEach((color) => {
       mensSizeIDs.forEach((sizeID) => {
         menQuantityBulkData.push({
           shoe_id: shoeID,
-          color_id: color.id,
+          color_id: color,
           size_id: sizeID,
           quantity: randomNumberGenerator(0, 9),
         });
@@ -264,6 +239,8 @@ const menQuantData = async () => {
     });
   }
   await Quantity.bulkCreate(menQuantityBulkData);
+  await Shoecolor.bulkCreate(limitedColorBulkData);
+  await Shoecolor.bulkCreate(classicColorBulkData);
   mensQuantCountMin += 1000;
   mensQuantCountMax += 1000;
 };
@@ -272,13 +249,38 @@ let womensQuantCountMin = 2;
 let womensQuantCountMax = 1000;
 const womenQuantData = async () => {
   const womenQuantityBulkData = [];
+  const classicColorBulkData = [];
+  const limitedColorBulkData = [];
   for (let shoeID = womensQuantCountMin; shoeID <= womensQuantCountMax; shoeID += 2) {
-    const colors = await shoes.get.colors(shoeID);
-    colors.forEach((color) => {
+    const classicCount = randomNumberGenerator(2, 5);
+    const classicColorIndexes = [];
+    for (let i = 0; i < classicCount; i += 1) {
+      const choice = randomNumberGenerator(1, 5);
+      if (!classicColorIndexes.includes(choice)) {
+        classicColorIndexes.push(choice);
+      } else {
+        i -= 1;
+      }
+    }
+    const limitedCount = randomNumberGenerator(1, 4);
+    const limitedColorIndexes = [];
+    for (let i = 0; i < limitedCount; i += 1) {
+      const choice = randomNumberGenerator(6, 15);
+      if (!limitedColorIndexes.includes(choice)) {
+        limitedColorIndexes.push(choice);
+      } else {
+        i -= 1;
+      }
+    }
+    limitedColorIndexes.forEach((x) => {
+      limitedColorBulkData.push({ shoe_id: shoeID, color_id: x });
+    });
+    const allColors = [...limitedColorIndexes, ...classicColorIndexes];
+    allColors.forEach((color) => {
       womensSizeIDs.forEach((sizeID) => {
         womenQuantityBulkData.push({
           shoe_id: shoeID,
-          color_id: color.id,
+          color_id: color,
           size_id: sizeID,
           quantity: randomNumberGenerator(0, 9),
         });
@@ -286,6 +288,8 @@ const womenQuantData = async () => {
     });
   }
   await Quantity.bulkCreate(womenQuantityBulkData);
+  await Shoecolor.bulkCreate(limitedColorBulkData);
+  await Shoecolor.bulkCreate(classicColorBulkData);
   womensQuantCountMin += 1000;
   womensQuantCountMax += 1000;
 };
@@ -294,8 +298,6 @@ const seed = async () => {
   await repeat(shoeData, 125);
   await colorSeed();
   await sizeSeed();
-  await repeat(shoeColorsClassic, 125);
-  await repeat(shoeColorsLimited, 125);
   await repeat(mensSizeData, 125);
   await repeat(womensSizeData, 125);
   await repeat(menQuantData, 1000);
