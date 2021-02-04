@@ -1,10 +1,11 @@
 require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
+const {username, password} = require('../db_creds.js')
 
-const sequelize = new Sequelize('fec_somebirds_shoeinventory', 'student', '', {
+const sequelize = new Sequelize('fec_somebirds_shoeinventory', username, password, {
   host: process.env.DEV_DB_HOST || 'fec-somebirds.cvmpdjgctjaa.us-east-2.rds.amazonaws.com',
-  port: 3306,
-  dialect: 'mysql',
+  port: 5432, //3306,
+  dialect: 'postgres', //'mysql',
   logging: false
 });
 
