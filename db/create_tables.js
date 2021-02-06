@@ -1,10 +1,10 @@
-const { Shoe, Color, Size, Quantity, Shoecolor, Shoesize } = require('./index.js');
+const { Shoe, Color, Quantity, Shoecolor, Shoesize } = require('./index.js');
 
 async function synchronizeModels() {
   try {
     await Shoe.sync();
     await Color.sync();
-    await Size.sync();
+    //await Size.sync();
     await Quantity.sync();
     await Shoecolor.sync();
     await Shoesize.sync();

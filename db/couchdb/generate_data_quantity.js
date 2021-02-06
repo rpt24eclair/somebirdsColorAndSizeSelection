@@ -17,10 +17,13 @@ const randomNumberGenerator = (min, max) => {
 
 const mensSizeIDs = [8, 9, 10, 11, 12, 13];
 
-let mensQuantCountMin = 1;
-let mensQuantCountMax = 1000;
+// let mensQuantCountMin = 9750000;
+// let mensQuantCountMax = 10000000;
+let mensQuantCountMin = 9750001;
+let mensQuantCountMax = 9750500;
 const menQuantData = async () => {
   for (let shoeID = mensQuantCountMin; shoeID <= mensQuantCountMax; shoeID += 2) {
+    const IDquants = [];
     const classicCount = randomNumberGenerator(2, 5);
     const classicColorIndexes = [];
     for (let i = 0; i < classicCount; i += 1) {
@@ -44,21 +47,62 @@ const menQuantData = async () => {
     const allColors = [...limitedColorIndexes, ...classicColorIndexes];
     allColors.forEach((color) => {
       mensSizeIDs.forEach((sizeID) => {
-        writer.write({
-          shoe_id: shoeID,
-          color_id: color,
-          size_id: sizeID,
-          quantity: randomNumberGenerator(0, 9),
-        });
+        IDquants.push(
+          `{color_id: ${color},
+        size_id: ${sizeID},
+        quantity: ${randomNumberGenerator(0, 9)},}`
+        )
       });
     });
+    // writer.write({
+    //   shoe_id: shoeID,
+    //   quantity: IDquants,
+    // });
+    // function write() {
+    //   let i = shoeID;
+    //   let ok = true;
+    //   do {
+    //     i -= 1;
+    //     //id += 1;
+    //     if (i === 0) {
+    //       writer.write({
+    //         shoe_id: shoeID,
+    //         quantity: IDquants,
+    //       });
+    //     } else {
+    //       ok = writer.write({
+    //         shoe_id: shoeID,
+    //         quantity: IDquants,
+    //       });
+    //     }
+    //   } while (i > 0 && ok);
+    //   if (i > 0) {
+    //     writer.once('drain', write);
+    //   }
+    // }
+    // write()
+      writer.write({
+            shoe_id: shoeID,
+            quantity: IDquants,
+          });
   }
-  mensQuantCountMin += 1000;
-  mensQuantCountMax += 1000;
+
+  mensQuantCountMin += 500;
+  mensQuantCountMax += 500;
 };
 
-exports.seed = async () => {
-  await writer.pipe(fs.createWriteStream('db/couchdb/quantities.csv'));
-  await repeat(menQuantData, 500);
-  await writer.end();
+let seed = async () => {
+  // await writer.pipe(fs.createWriteStream('db/couchdb/quantities.csv'));
+  // await repeat(menQuantData, 500);
+  // await writer.end();
+
+  const quantSizeOpts = { delimiter: ',', url: url, database: 'quantities' };
+  await couchimport.importFile('db/couchdb/quantities.csv', quantSizeOpts, (err, data) => {
+    if (err) {
+      console.log('Failed to import');
+    } else {
+      console.log('CSV Import success', data);
+    }
+  });
 };
+seed()

@@ -10,14 +10,14 @@ const womenquant = require('./generate_data_quantity_women.js');
 const url = `http://${username}:${password}@127.0.0.1:5984`;
 
 const csvGenerator = async () => {
-  await sizes();
-  await colors();
-  await shoesizes();
-  await shoes();
-  await menquant();
-  await menquant();
-  await womenquant();
-  await womenquant();
+  await sizes.seed();
+  await colors.seed();
+  await shoesizes.seed();
+  await shoes.seed();
+  await menquant.seed();
+  await menquant.seed();
+  await womenquant.seed();
+  await womenquant.seed();
 };
 
 const sendToDb = async () => {
@@ -76,5 +76,5 @@ const sendToDb = async () => {
 };
 
 csvGenerator().then(() => {
-  sendToDb();
+  //sendToDb();
 });

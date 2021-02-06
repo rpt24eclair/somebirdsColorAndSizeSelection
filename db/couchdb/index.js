@@ -1,7 +1,7 @@
 const async = require('async');
 const couch = require('./couchdb');
 
-const databases = ['colors', 'quantities', 'shoecolors', 'shoes', 'shoesizes', 'sizes'];
+const databases = ['colors', 'quantities', 'shoecolors', 'shoes', 'shoesizes'];
 
 const createDatabase = (db, cb) => {
   couch.db.create(db, (err) => {

@@ -56,12 +56,12 @@ const Color = sequelize.define('color', {
   }
 }, { timestamps: false });
 
-const Size = sequelize.define('size', {
-  size: {
-    type: DataTypes.FLOAT,
-    allowNull: false
-  }
-}, { timestamps: false });
+// const Size = sequelize.define('size', {
+//   size: {
+//     type: DataTypes.FLOAT,
+//     allowNull: false
+//   }
+// }, { timestamps: false });
 
 const Quantity = sequelize.define('quantity', {
   shoe_id: {
@@ -80,17 +80,17 @@ const Quantity = sequelize.define('quantity', {
       key: 'id'
     }
   },
-  size_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Size,
-      key: 'id'
-    }
-  },
+  // size_id: {
+  //   type: DataTypes.INTEGER,
+  //   allowNull: false,
+  //   references: {
+  //     model: Size,
+  //     key: 'id'
+  //   }
+  // },
   quantity: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
+    type: DataTypes.TEXT,
+    //defaultValue: 0,
     allowNull: false
   }
 }, { timestamps: false });
@@ -105,12 +105,12 @@ const Shoecolor = sequelize.define('shoecolor', {
     }
   },
   color_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false,
-    references: {
-      model: Color,
-      key: 'id'
-    }
+    // references: {
+    //   model: Color,
+    //   key: 'id'
+    // }
   }
 }, { timestamps: false });
 
@@ -124,12 +124,12 @@ const Shoesize = sequelize.define('shoesize', {
     }
   },
   size_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false,
-    references: {
-      model: Size,
-      key: 'id'
-    }
+    // references: {
+    //   model: Size,
+    //   key: 'id'
+    // }
   }
 }, { timestamps: false });
 

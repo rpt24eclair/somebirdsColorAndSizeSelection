@@ -15,7 +15,7 @@ async function repeat(func, times) {
   times && --times && await repeat(func, times);
 }
 
-let model = 1;
+let model = 9000001;
 const shoeData = async () => {
   await gender.forEach((gender) => {
     material.forEach((material) => {
