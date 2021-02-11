@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const {
-  Color, Size, Quantity, Shoecolor, Shoesize, Shoe,
+  Color, Quantity, Shoecolor, Shoe,
 } = require('../db/index.js');
 
 const get = {
@@ -12,7 +12,13 @@ const get = {
         },
       })
         .then((shoeColors) => {
-          return shoeColors.map((x) => x.dataValues.color_id);
+          //console.log(shoeColors)
+          // console.log(shoeColors[0].dataValues.color_id)
+          // console.log(shoeColors[0].dataValues.color_id.split(','))
+          return shoeColors[0].dataValues.color_id.split(',')
+          // shoeColors.map((x) => {
+          //   console.log(x)
+          //   x.dataValues.color_id});
         })
         .then((colorIDs) => {
           Color.findAll({
@@ -32,31 +38,39 @@ const get = {
     });
   },
   sizes: (id) => {
-    return new Promise((resolve, reject) => {
-      Shoesize.findAll({
-        where: {
-          shoe_id: id,
-        },
-      })
-        .then((shoesizes) => {
-          return shoesizes.map((x) => x.dataValues.size_id);
-        })
-        .then((sizeIDs) => {
-          Size.findAll({
-            where: {
-              id: {
-                [Op.or]: sizeIDs,
-              },
-            },
-          })
-            .then((results) => {
-              resolve(results.map((x) => x.dataValues));
-            });
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+    const mensSizes = [8, 9, 10, 11, 12, 13];
+    const womensSizes = [5, 6, 7, 8, 9, 10];
+
+    if (id % 2 === 0) {
+      return womensSizes;
+    } else {
+      return mensSizes;
+    }
+    // return new Promise((resolve, reject) => {
+    //   Shoesize.findAll({
+    //     where: {
+    //       shoe_id: id,
+    //     },
+    //   })
+    //     .then((shoesizes) => {
+    //       return shoesizes.map((x) => x.dataValues.size_id);
+    //     })
+    //     .then((sizeIDs) => {
+    //       Size.findAll({
+    //         where: {
+    //           id: {
+    //             [Op.or]: sizeIDs,
+    //           },
+    //         },
+    //       })
+    //         .then((results) => {
+    //           resolve(results.map((x) => x.dataValues));
+    //         });
+    //     })
+    //     .catch((err) => {
+    //       reject(err);
+    //     });
+    // });
   },
   quantity: (shoeID, colorID) => {
     return new Promise((resolve, reject) => {
@@ -67,9 +81,16 @@ const get = {
         },
       })
         .then((results) => {
-          resolve(results.map((x) => ({
-            size_id: x.dataValues.size_id, quantity: x.dataValues.quantity,
-          })));
+          let string = results[0].dataValues.quantity;
+          let arr = string.split('-')
+          let objs = arr.map(quant => {
+            let each = quant.split(',');
+            let obj = {};
+            obj.size_id = each[0].split(':')[1];
+            obj.quantity = each[1].split(':')[1];
+            return obj;
+          })
+          resolve(objs)
         })
         .catch((err) => {
           reject(err);

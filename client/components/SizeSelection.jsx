@@ -21,8 +21,8 @@ function SizeSelection(props) {
   }, [props.colorID]);
 
   const handleClick = (sizeData) => {
-    const id = sizeData.id;
-    const quantity = stock.filter(x => x.size_id === id)[0];
+    const id = sizeData.size;
+    const quantity = stock.filter(x => x.size_id == id)[0];
     props.setInStock(quantity.quantity > 0);
     props.setSize(id)
   }
