@@ -12,13 +12,7 @@ const get = {
         },
       })
         .then((shoeColors) => {
-          //console.log(shoeColors)
-          // console.log(shoeColors[0].dataValues.color_id)
-          // console.log(shoeColors[0].dataValues.color_id.split(','))
           return shoeColors[0].dataValues.color_id.split(',')
-          // shoeColors.map((x) => {
-          //   console.log(x)
-          //   x.dataValues.color_id});
         })
         .then((colorIDs) => {
           Color.findAll({
@@ -40,37 +34,11 @@ const get = {
   sizes: (id) => {
     const mensSizes = [8, 9, 10, 11, 12, 13];
     const womensSizes = [5, 6, 7, 8, 9, 10];
-
     if (id % 2 === 0) {
       return womensSizes;
     } else {
       return mensSizes;
     }
-    // return new Promise((resolve, reject) => {
-    //   Shoesize.findAll({
-    //     where: {
-    //       shoe_id: id,
-    //     },
-    //   })
-    //     .then((shoesizes) => {
-    //       return shoesizes.map((x) => x.dataValues.size_id);
-    //     })
-    //     .then((sizeIDs) => {
-    //       Size.findAll({
-    //         where: {
-    //           id: {
-    //             [Op.or]: sizeIDs,
-    //           },
-    //         },
-    //       })
-    //         .then((results) => {
-    //           resolve(results.map((x) => x.dataValues));
-    //         });
-    //     })
-    //     .catch((err) => {
-    //       reject(err);
-    //     });
-    // });
   },
   quantity: (shoeID, colorID) => {
     return new Promise((resolve, reject) => {
@@ -107,24 +75,13 @@ const create = (details) => {
   })
     .then((shoe) => {
       id = shoe.dataValues.id;
-      const bulkColors = [];
-      details.color.forEach((item) => {
-        bulkColors.push({ shoe_id: shoe.dataValues.id, color_id: item });
-      });
-      return Shoecolor.bulkCreate(bulkColors);
-    })
-    .then(() => {
-      const bulkSize = [];
-      details.size.forEach((item) => {
-        bulkSize.push({ shoe_id: id, size_id: item });
-      });
-      return Shoesize.bulkCreate(bulkSize);
+      return Shoecolor.create({ shoe_id: shoe.dataValues.id, color_id: color });
     })
     .then(() => {
       const bulkQuantity = [];
       details.quantity.forEach((item) => {
         bulkQuantity.push({
-          shoe_id: id, color_id: item.color, size_id: item.size, quantity: item.quantity,
+          shoe_id: id, color_id: item.color, quantity: item.quantity,
         });
       });
       return Quantity.bulkCreate(bulkQuantity);
@@ -149,15 +106,10 @@ const update = (id, info) => {
       });
     })
     .then(() => {
-      Shoesize.findOrCreate({
-        where: { shoe_id: id, size_id: info.size },
-      });
-    })
-    .then(() => {
       Quantity.update({
         quantity: info.quantity,
       }, {
-        where: { shoe_id: id, color_id: info.color, size_id: info.size },
+        where: { shoe_id: id, color_id: info.color },
         returning: true,
         plain: true,
       });
@@ -175,13 +127,6 @@ const recycle = (number) => {
   })
     .then(() => {
       Shoecolor.destroy({
-        where: {
-          shoe_id: number,
-        },
-      });
-    })
-    .then(() => {
-      Shoesize.destroy({
         where: {
           shoe_id: number,
         },
