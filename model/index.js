@@ -35,9 +35,9 @@ const get = {
     const mensSizes = [8, 9, 10, 11, 12, 13];
     const womensSizes = [5, 6, 7, 8, 9, 10];
     if (id % 2 === 0) {
-      return womensSizes;
+      return womensSizes.map(size => {return {size: size}});
     } else {
-      return mensSizes;
+      return mensSizes.map(size => {return {size: size}});
     }
   },
   quantity: (shoeID, colorID) => {
@@ -68,22 +68,19 @@ const get = {
 };
 
 const create = (details) => {
-  let id;
   return Shoe.create({
     name: details.name,
     model: details.model,
   })
-    .then((shoe) => {
-      id = shoe.dataValues.id;
-      return Shoecolor.create({ shoe_id: shoe.dataValues.id, color_id: color });
+    .then(() => {
+      return Shoecolor.create({ shoe_id: details.model, color_id: details.color.toString() });
     })
     .then(() => {
       const bulkQuantity = [];
-      details.quantity.forEach((item) => {
-        bulkQuantity.push({
-          shoe_id: id, color_id: item.color, quantity: item.quantity,
-        });
-      });
+      details.color.forEach(color => {
+        bulkQuantity.push({shoe_id: details.model, color_id: color, quantity: details.quantity.toString()});
+      })
+
       return Quantity.bulkCreate(bulkQuantity);
     })
     .catch((err) => {
@@ -135,7 +132,7 @@ const recycle = (number) => {
     .then(() => {
       Shoe.destroy({
         where: {
-          id: number,
+          model: number,
         },
       });
     })
