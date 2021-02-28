@@ -1,9 +1,14 @@
+const newrelic = require('newrelic');
 const express = require('express');
 const bodyParser = require('body-parser');
 const shoes = require('../model');
 
 const app = express();
 const PORT = '3001';
+app.locals.newrelic = newrelic;
+
+var cors = require('cors');
+app.use(cors());
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
