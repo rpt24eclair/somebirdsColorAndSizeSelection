@@ -12,8 +12,7 @@ Shoe color &amp; size selection service
 { "name": string,
   "model": number,
   "color": [numbers],
-  "size": [numbers],
-  "quantity": [{"size": number, "color": number, "quantity": number}]
+  "quantity": [{"size": number, "quantity": number}]
 }
 ```
 
