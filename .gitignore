@@ -3,3 +3,5 @@ bundle.*
 *.pem
 *.sh
 *.env
+*.csv
+db_creds.js

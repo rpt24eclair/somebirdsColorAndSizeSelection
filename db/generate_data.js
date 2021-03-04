@@ -1,27 +1,28 @@
-const { Shoe, Color, Size, Quantity, Shoecolor, Shoesize } = require('./index.js');
+const fs = require('fs');
 
 const gender = ['Men\'s', 'Women\'s', 'Gender Neutral', 'Child\'s', 'Girl\'s', 'Boy\'s', 'Toddler\'s', 'Toddler Girl\'s', 'Toddler Boy\'s', 'Baby\'s', 'Baby Girl\'s', 'Baby Boy\'s', 'Infant\'s', 'Infant Girl\'s', 'Infant Boy\'s', 'Teen\'s', 'Teen Girl\'s', 'Teen Boy\'s', 'Senior\'s', 'Junior\'s'];
 const material = ['Wool', 'Cotton', 'Polyester', 'Nylon', 'Leather', 'Silk', 'Rubber', 'Fiber', 'Synthetic', 'Polyurethane', 'Artificial', 'Adhesive', 'Felt', 'Kevlar', 'Cowhide', 'Velvet', 'Microfiber', 'Nanotech', 'Invisible', 'Indestructible'];
 const action = ['Runners', 'Skippers', 'Sprinters', 'Joggers', 'Walkers', 'Trotters', 'Climbers', 'Dashers', 'Pipers', 'Loungers', 'Marathoners', 'Hurdlers', 'Trackers', 'Racers', 'Bikers', 'Slippers', 'Sneakers', 'Tennis Shoes', 'Footgear', 'Moccasins'];
 
-let model = 1;
 const shoeData = async () => {
-  const shoeBulkData = [];
-  await gender.forEach((gender) => {
-    material.forEach((material) => {
-      action.forEach((action) => {
-        shoeBulkData.push({ name: `${gender} ${material} ${action}`, model: model });
-        model += 1;
-      });
-    });
-  });
-  await Shoe.bulkCreate(shoeBulkData);
+  const writeModel = fs.createWriteStream('db/shoes.csv');
+  let model = 1;
+  writeModel.write('name,model\n', 'utf8');
+  for (let i = 0; i < 1250; i += 1) {
+    for (let j = 0; j < gender.length; j += 1) {
+      for (let k = 0; k < material.length; k += 1) {
+        for (let l = 0; l < action.length; l += 1) {
+          const name = `${gender[j]} ${material[k]} ${action[l]}`;
+          const data = `${name}, ${model}\n`;
+          if (!writeModel.write(data)) {
+            await new Promise((resolve) => writeModel.once('drain', resolve));
+          }
+          model += 1;
+        }
+      }
+    }
+  }
 };
-
-async function repeat(func, times) {
-  await func();
-  times && --times && await repeat(func, times);
-}
 
 const classicColorData = [
   {
@@ -151,156 +152,120 @@ const limitedColorData = [
 
 const colorBulkData = [...classicColorData, ...limitedColorData];
 const colorSeed = async () => {
-  await Color.bulkCreate(colorBulkData);
+  const colorModel = fs.createWriteStream('db/colors.csv');
+  colorModel.write('name,shoe_color,sole_color,shoe_hex,sole_hex,limited\n', 'utf8');
+  for (let i = 0; i < colorBulkData.length; i += 1) {
+    const data = `${colorBulkData[i].name},${colorBulkData[i].shoe_color},${colorBulkData[i].sole_color},${colorBulkData[i].shoe_hex},${colorBulkData[i].sole_hex},${colorBulkData[i].limited}\n`;
+    if (!colorModel.write(data)) {
+      await new Promise((resolve) => colorModel.once('drain', resolve));
+    }
+  }
 };
-
-const shoeSize = ['5', '6', '7', '8', '9', '10', '11', '12', '13'];
-const sizeBulkData = shoeSize.map((size) => ({ size: size }));
-const sizeSeed = async () => {
-  await Size.bulkCreate(sizeBulkData);
-};
-
-const SHOE_MULTIPLIER = 8000;
 
 const randomNumberGenerator = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-const mensSizeIDs = [4, 5, 6, 7, 8, 9];
-const womensSizeIDs = [1, 2, 3, 4, 5, 6];
-let mensSizeCountMin = 1;
-let mensSizeCountMax = SHOE_MULTIPLIER;
-const mensSizeData = async () => {
-  const menSizeBulkData = [];
-  for (let shoeID = mensSizeCountMin; shoeID <= mensSizeCountMax; shoeID += 2) {
-    mensSizeIDs.forEach((sizeID) => {
-      menSizeBulkData.push({ shoe_id: shoeID, size_id: sizeID });
-    });
-  }
-  await Shoesize.bulkCreate(menSizeBulkData);
-  mensSizeCountMin += SHOE_MULTIPLIER;
-  mensSizeCountMax += SHOE_MULTIPLIER;
-};
+const mensSizes = [8, 9, 10, 11, 12, 13];
+const womensSizes = [5, 6, 7, 8, 9, 10];
 
-let womensSizeCountMin = 2;
-let womensSizeCountMax = SHOE_MULTIPLIER;
-const womensSizeData = async () => {
-  const womenSizeBulkData = [];
-  for (let shoeID = womensSizeCountMin; shoeID <= womensSizeCountMax; shoeID += 2) {
-    womensSizeIDs.forEach((sizeID) => {
-      womenSizeBulkData.push({ shoe_id: shoeID, size_id: sizeID });
-    });
-  }
-  await Shoesize.bulkCreate(womenSizeBulkData);
-  womensSizeCountMin += SHOE_MULTIPLIER;
-  womensSizeCountMax += SHOE_MULTIPLIER;
-};
-
-let mensQuantCountMin = 1;
-let mensQuantCountMax = 1000;
 const menQuantData = async () => {
-  const menQuantityBulkData = [];
-  const classicColorBulkData = [];
-  const limitedColorBulkData = [];
-  for (let shoeID = mensQuantCountMin; shoeID <= mensQuantCountMax; shoeID += 2) {
+  const quantModel = fs.createWriteStream('db/quantity.csv');
+  quantModel.write('shoe_id color_id quantity\n', 'utf8');
+
+  const shoecolorModel = fs.createWriteStream('db/shoecolors.csv');
+  shoecolorModel.write('shoe_id color_id\n', 'utf8');
+
+  for (let shoeID = 1; shoeID <= 10000000; shoeID += 2) {
     const classicCount = randomNumberGenerator(2, 5);
-    const classicColorIndexes = [];
+    const colorIndexes = [];
     for (let i = 0; i < classicCount; i += 1) {
       const choice = randomNumberGenerator(1, 5);
-      if (!classicColorIndexes.includes(choice)) {
-        classicColorIndexes.push(choice);
+      if (!colorIndexes.includes(choice)) {
+        colorIndexes.push(choice);
       } else {
         i -= 1;
       }
     }
+
     const limitedCount = randomNumberGenerator(1, 4);
-    const limitedColorIndexes = [];
     for (let i = 0; i < limitedCount; i += 1) {
       const choice = randomNumberGenerator(6, 15);
-      if (!limitedColorIndexes.includes(choice)) {
-        limitedColorIndexes.push(choice);
+      if (!colorIndexes.includes(choice)) {
+        colorIndexes.push(choice);
       } else {
         i -= 1;
       }
     }
-    limitedColorIndexes.forEach((x) => {
-      limitedColorBulkData.push({ shoe_id: shoeID, color_id: x });
-    });
-    const allColors = [...limitedColorIndexes, ...classicColorIndexes];
-    allColors.forEach((color) => {
-      mensSizeIDs.forEach((sizeID) => {
-        menQuantityBulkData.push({
-          shoe_id: shoeID,
-          color_id: color,
-          size_id: sizeID,
-          quantity: randomNumberGenerator(0, 9),
-        });
+
+    const shoecolorData = `${shoeID} ${colorIndexes.toString()}\n`;
+    if (!shoecolorModel.write(shoecolorData)) {
+      await new Promise((resolve) => shoecolorModel.once('drain', resolve));
+    }
+
+    for (let j = 0; j < colorIndexes.length; j+= 1) {
+      const idQuants = [];
+      mensSizes.forEach((sizeID) => {
+        idQuants.push(`{size_id:${sizeID},quantity:${randomNumberGenerator(0, 9)},}`);
       });
-    });
+      const quantData = `${shoeID} ${colorIndexes[j]} ${idQuants.toString()}\n`;
+      if (!quantModel.write(quantData)) {
+        await new Promise((resolve) => quantModel.once('drain', resolve));
+      }
+    }
   }
-  await Quantity.bulkCreate(menQuantityBulkData);
-  await Shoecolor.bulkCreate(limitedColorBulkData);
-  await Shoecolor.bulkCreate(classicColorBulkData);
-  mensQuantCountMin += 1000;
-  mensQuantCountMax += 1000;
 };
 
-let womensQuantCountMin = 2;
-let womensQuantCountMax = 1000;
 const womenQuantData = async () => {
-  const womenQuantityBulkData = [];
-  const classicColorBulkData = [];
-  const limitedColorBulkData = [];
-  for (let shoeID = womensQuantCountMin; shoeID <= womensQuantCountMax; shoeID += 2) {
+  const quantModel = fs.createWriteStream('db/quantity_women.csv');
+  quantModel.write('shoe_id color_id quantity\n', 'utf8');
+
+  const shoecolorModel = fs.createWriteStream('db/shoecolors_women.csv');
+  shoecolorModel.write('shoe_id color_id\n', 'utf8');
+
+  for (let shoeID = 2; shoeID <= 10000000; shoeID += 2) {
     const classicCount = randomNumberGenerator(2, 5);
-    const classicColorIndexes = [];
+    const colorIndexes = [];
     for (let i = 0; i < classicCount; i += 1) {
       const choice = randomNumberGenerator(1, 5);
-      if (!classicColorIndexes.includes(choice)) {
-        classicColorIndexes.push(choice);
+      if (!colorIndexes.includes(choice)) {
+        colorIndexes.push(choice);
       } else {
         i -= 1;
       }
     }
+
     const limitedCount = randomNumberGenerator(1, 4);
-    const limitedColorIndexes = [];
     for (let i = 0; i < limitedCount; i += 1) {
       const choice = randomNumberGenerator(6, 15);
-      if (!limitedColorIndexes.includes(choice)) {
-        limitedColorIndexes.push(choice);
+      if (!colorIndexes.includes(choice)) {
+        colorIndexes.push(choice);
       } else {
         i -= 1;
       }
     }
-    limitedColorIndexes.forEach((x) => {
-      limitedColorBulkData.push({ shoe_id: shoeID, color_id: x });
-    });
-    const allColors = [...limitedColorIndexes, ...classicColorIndexes];
-    allColors.forEach((color) => {
-      womensSizeIDs.forEach((sizeID) => {
-        womenQuantityBulkData.push({
-          shoe_id: shoeID,
-          color_id: color,
-          size_id: sizeID,
-          quantity: randomNumberGenerator(0, 9),
-        });
+    const shoecolorData = `${shoeID} ${colorIndexes.toString()}\n`;
+    if (!shoecolorModel.write(shoecolorData)) {
+      await new Promise((resolve) => shoecolorModel.once('drain', resolve));
+    }
+
+    for (let j = 0; j < colorIndexes.length; j += 1) {
+      const womenIdQuants = [];
+      womensSizes.forEach((sizeID) => {
+        womenIdQuants.push(`{size_id:${sizeID},quantity:${randomNumberGenerator(0, 9)}}`);
       });
-    });
+      const quantData = `${shoeID} ${colorIndexes[j]} ${womenIdQuants.toString()}\n`;
+      if (!quantModel.write(quantData)) {
+        await new Promise((resolve) => quantModel.once('drain', resolve));
+      }
+    }
   }
-  await Quantity.bulkCreate(womenQuantityBulkData);
-  await Shoecolor.bulkCreate(limitedColorBulkData);
-  await Shoecolor.bulkCreate(classicColorBulkData);
-  womensQuantCountMin += 1000;
-  womensQuantCountMax += 1000;
 };
 
 const seed = async () => {
-  await repeat(shoeData, 125);
+  await shoeData();
   await colorSeed();
-  await sizeSeed();
-  await repeat(mensSizeData, 125);
-  await repeat(womensSizeData, 125);
-  await repeat(menQuantData, 1000);
-  await repeat(womenQuantData, 1000);
+  await menQuantData();
+  await womenQuantData();
 };
 seed();
