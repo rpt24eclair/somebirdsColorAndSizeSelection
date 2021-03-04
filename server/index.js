@@ -13,6 +13,7 @@ app.get('/shoes/:shoeId/colors', (req, res) => {
   const shoeId = req.params.shoeId;
   shoes.get.colors(shoeId)
     .then((result) => {
+      //console.log(result)
       res.send(result);
     })
     .catch((err) => {
@@ -23,20 +24,31 @@ app.get('/shoes/:shoeId/colors', (req, res) => {
 
 app.get('/shoes/:shoeId/sizes', (req, res) => {
   const shoeId = req.params.shoeId;
-  shoes.get.sizes(shoeId)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.end();
-    });
+  const mensSizes = [8, 9, 10, 11, 12, 13];
+  const womensSizes = [5, 6, 7, 8, 9, 10];
+
+  if (shoeId % 2 === 0) {
+    //console.log(womensSizes)
+    //console.log(womensSizes.map(size => {return {size: size}}))
+    res.send(womensSizes.map(size => {return {size: size}}));
+  } else {
+    res.send(mensSizes.map(size => {return {size: size}}));
+  }
+  // shoes.get.sizes(shoeId)
+  //   .then((result) => {
+  //     res.send(result);
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //     res.end();
+  //   });
 });
 
 app.get('/shoes/:shoeId/colors/:colorId/quantities', (req, res) => {
   const { shoeId, colorId } = req.params;
   shoes.get.quantity(shoeId, colorId)
     .then((result) => {
+      console.log('result', result)
       res.send(result);
     })
     .catch((err) => {

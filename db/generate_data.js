@@ -206,9 +206,9 @@ const menQuantData = async () => {
     for (let j = 0; j < colorIndexes.length; j+= 1) {
       const idQuants = [];
       mensSizes.forEach((sizeID) => {
-        idQuants.push(`{size_id:${sizeID},quantity:${randomNumberGenerator(0, 9)},}`);
+        idQuants.push(`"size_id":${sizeID},"quantity":${randomNumberGenerator(0, 9)}`);
       });
-      const quantData = `${shoeID} ${colorIndexes[j]} ${idQuants.toString()}\n`;
+      const quantData = `${shoeID} ${colorIndexes[j]} ${idQuants.join('-')}\n`;
       if (!quantModel.write(quantData)) {
         await new Promise((resolve) => quantModel.once('drain', resolve));
       }
@@ -252,9 +252,9 @@ const womenQuantData = async () => {
     for (let j = 0; j < colorIndexes.length; j += 1) {
       const womenIdQuants = [];
       womensSizes.forEach((sizeID) => {
-        womenIdQuants.push(`{size_id:${sizeID},quantity:${randomNumberGenerator(0, 9)}}`);
+        womenIdQuants.push(`"size_id":${sizeID},"quantity":${randomNumberGenerator(0, 9)}`);
       });
-      const quantData = `${shoeID} ${colorIndexes[j]} ${womenIdQuants.toString()}\n`;
+      const quantData = `${shoeID} ${colorIndexes[j]} ${womenIdQuants.join('-')}\n`;
       if (!quantModel.write(quantData)) {
         await new Promise((resolve) => quantModel.once('drain', resolve));
       }
