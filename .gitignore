@@ -5,3 +5,6 @@ bundle.*
 *.env
 *.csv
 db_creds.js
+newrelic.js
+newrelic_creds.js
+newrelic_agent.log
